@@ -1,0 +1,31 @@
+services:
+  database:
+    build:
+      context: .
+      dockerfile: ./Dockerfile_db
+    container_name: bank_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: postgres
+
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile_app
+    container_name: bank_app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: admin
+
+volumes:
+  db_data:
